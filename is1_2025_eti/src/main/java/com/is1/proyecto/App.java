@@ -149,12 +149,15 @@ public class App {
             return new ModelAndView(model, "login.mustache");
         }, new MustacheTemplateEngine()); // Especifica el motor de plantillas para esta ruta.
 
+        get("/teacher/new", (req, res) -> {
+            return new ModelAndView(new HashMap<>(), "docente_form.mustache"); // No pasa un modelo específico, solo el formulario.
+        }, new MustacheTemplateEngine());
+
         // GET: Ruta de alias para el formulario de creación de cuenta.
         // En una aplicación real, probablemente querrías unificar con '/user/create' para evitar duplicidad.
         get("/user/new", (req, res) -> {
             return new ModelAndView(new HashMap<>(), "user_form.mustache"); // No pasa un modelo específico, solo el formulario.
         }, new MustacheTemplateEngine()); // Especifica el motor de plantillas para esta ruta.
-
 
         // --- Rutas POST para manejar envíos de formularios y APIs ---
 
