@@ -18,6 +18,8 @@ import java.util.Map; // Interfaz Map, utilizada para Map.of() o HashMap.
 
 // Importaciones de clases del proyecto
 import com.is1.proyecto.config.DBConfigSingleton; // Clase Singleton para la configuración de la base de datos.
+import com.is1.proyecto.models.Docente;
+import com.is1.proyecto.models.Persona;
 import com.is1.proyecto.models.User; // Modelo de ActiveJDBC que representa la tabla 'users'.
 
 
@@ -149,10 +151,6 @@ public class App {
             return new ModelAndView(model, "login.mustache");
         }, new MustacheTemplateEngine()); // Especifica el motor de plantillas para esta ruta.
 
-        get("/teacher/new", (req, res) -> {
-            return new ModelAndView(new HashMap<>(), "docente_form.mustache"); // No pasa un modelo específico, solo el formulario.
-        }, new MustacheTemplateEngine());
-        
 
         // GET: Ruta de alias para el formulario de creación de cuenta.
         // En una aplicación real, probablemente querrías unificar con '/user/create' para evitar duplicidad.
@@ -187,7 +185,7 @@ public class App {
 
                 res.status(201); // Código de estado HTTP 201 (Created) para una creación exitosa.
                 // Redirige al formulario de creación con un mensaje de éxito.
-                res.redirect("/user/create?message=Cuenta creada exitosamente para " + name + "!");
+                res.redirect("/teacher/create?message=Alta realizada exitosamente para " + name + "!");
                 return ""; // Retorna una cadena vacía.
 
             } catch (Exception e) {
@@ -294,6 +292,80 @@ public class App {
                 e.printStackTrace(); // Imprime el stack trace para depuración.
                 res.status(500); // Internal Server Error.
                 return objectMapper.writeValueAsString(Map.of("error", "Error interno al registrar usuario: " + e.getMessage()));
+            }
+        });
+
+        get("/teacher/new", (req, res) -> {
+            return new ModelAndView(new HashMap<>(), "docente_form.mustache"); // No pasa un modelo específico, solo el formulario.
+        }, new MustacheTemplateEngine());
+
+        post("/teacher/new", (req, res) -> {
+            String name = req.queryParams("nombre");
+            String apellido = req.queryParams("apellido");
+            int dni;
+            try {
+                dni = Integer.parseInt(req.queryParams("dni"));
+                } catch (NumberFormatException e) {
+                res.status(400);
+                return "DNI inválido: debe ser un número";
+            }
+            String contacto = req.queryParams("contacto");
+            String direccion = req.queryParams("direccion");
+            String matricula = req.queryParams("matricula");
+
+            // Validaciones básicas: campos no pueden ser nulos o vacíos.
+            if (name == null || name.isEmpty() || apellido == null || apellido.isEmpty() 
+            || dni <= 0 || contacto == null || contacto.isEmpty() || direccion == null 
+            || direccion.isEmpty() || matricula == null || matricula.isEmpty()) {
+                res.status(400); // Código de estado HTTP 400 (Bad Request).
+                // Redirige al formulario de creación con un mensaje de error.
+                res.redirect("/teacher/new?error=Todos los campos son requeridos.");
+                return ""; // Retorna una cadena vacía ya que la respuesta ya fue redirigida.
+            }
+
+            try {
+                // Intenta crear y guardar la nueva cuenta en la base de datos.
+                Persona ac = new Persona(); // Crea una nueva instancia del modelo User.
+                ac.set("name", name); // Asigna el nombre de usuario.
+                ac.set("apellido", apellido);
+                ac.set("dni", dni);
+                ac.set("contacto", contacto);
+                ac.set("direccion", direccion);
+                Persona p1 = Persona.findFirst("dni = ?",dni);
+                Persona p2 = Persona.findFirst("contacto = ?", contacto);
+                String regex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,}$";
+                if(contacto == null || !contacto.matches(regex)){
+                    res.status(400); // Código de estado HTTP 201 (Created) para una creación exitosa.
+                    // Redirige al formulario de creación con un mensaje de éxito.
+                    res.redirect("//create?message=Contacto incorrecto !");
+                    return "";
+                }
+                if(p1 == null && p2 == null){
+                    ac.saveIt(); // Guarda el nuevo usuario en la tabla 'users'.
+                    Docente dc = new Docente();
+                    dc.set("matricula", matricula);
+                    dc.setPerson(ac);
+                    dc.saveIt();
+                }else{
+                    res.status(409); // Código de estado HTTP 201 (Created) para una creación exitosa.
+                    // Redirige al formulario de creación con un mensaje de éxito.
+                    res.redirect("//create?message=Persona ya existente para " + name + "!");
+                    return "";
+                }
+
+                res.status(201); // Código de estado HTTP 201 (Created) para una creación exitosa.
+                // Redirige al formulario de creación con un mensaje de éxito.
+                res.redirect("//create?message=Alta de docente realizada exitosamente para " + name + "!");
+                return ""; // Retorna una cadena vacía.
+
+            } catch (Exception e) {
+                // Si ocurre cualquier error durante la operación de DB (ej. nombre de usuario duplicado),
+                // se captura aquí y se redirige con un mensaje de error.
+                System.err.println("Error al dar de alta docente: " + e.getMessage());
+                e.printStackTrace(); // Imprime el stack trace para depuración.
+                res.status(500); // Código de estado HTTP 500 (Internal Server Error).
+                res.redirect("/teacher/new?error=Error interno al dar alta docente. Intente de nuevo.");
+                return ""; // Retorna una cadena vacía.
             }
         });
 

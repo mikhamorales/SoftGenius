@@ -7,7 +7,7 @@ CREATE TABLE users (
 
 CREATE TABLE persona (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    dni TEXT NOT NULL,
+    dni TEXT NOT NULL UNIQUE,
     nombre TEXT NOT NULL,     
     apellido TEXT NOT NULL,
     direccion TEXT NOT NULL,
