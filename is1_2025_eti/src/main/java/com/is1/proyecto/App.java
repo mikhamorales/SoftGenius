@@ -152,6 +152,7 @@ public class App {
         get("/teacher/new", (req, res) -> {
             return new ModelAndView(new HashMap<>(), "docente_form.mustache"); // No pasa un modelo específico, solo el formulario.
         }, new MustacheTemplateEngine());
+        
 
         // GET: Ruta de alias para el formulario de creación de cuenta.
         // En una aplicación real, probablemente querrías unificar con '/user/create' para evitar duplicidad.
