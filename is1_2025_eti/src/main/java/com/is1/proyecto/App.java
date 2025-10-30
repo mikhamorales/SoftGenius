@@ -326,7 +326,7 @@ public class App {
             try {
                 // Intenta crear y guardar la nueva cuenta en la base de datos.
                 Persona ac = new Persona(); // Crea una nueva instancia del modelo User.
-                ac.set("name", name); // Asigna el nombre de usuario.
+                ac.set("nombre", name); // Asigna el nombre de usuario.
                 ac.set("apellido", apellido);
                 ac.set("dni", dni);
                 ac.set("contacto", contacto);

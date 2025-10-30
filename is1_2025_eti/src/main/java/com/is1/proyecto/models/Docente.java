@@ -1,7 +1,9 @@
 package com.is1.proyecto.models;
 
 import org.javalite.activejdbc.Model;
+import org.javalite.activejdbc.annotations.Table;
 
+@Table("docente")
 public class Docente extends Model{
     public Persona getPerson(){
         return parent(Persona.class);
