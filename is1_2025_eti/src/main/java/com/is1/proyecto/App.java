@@ -185,7 +185,7 @@ public class App {
 
                 res.status(201); // Código de estado HTTP 201 (Created) para una creación exitosa.
                 // Redirige al formulario de creación con un mensaje de éxito.
-                res.redirect("/teacher/create?message=Alta realizada exitosamente para " + name + "!");
+                res.redirect("/user/create?message=Alta realizada exitosamente para " + name + "!");
                 return ""; // Retorna una cadena vacía.
 
             } catch (Exception e) {
@@ -337,7 +337,7 @@ public class App {
                 if(contacto == null || !contacto.matches(regex)){
                     res.status(400); // Código de estado HTTP 201 (Created) para una creación exitosa.
                     // Redirige al formulario de creación con un mensaje de éxito.
-                    res.redirect("//create?message=Contacto incorrecto !");
+                    res.redirect("/teacher/new?message=Contacto incorrecto !");
                     return "";
                 }
                 if(p1 == null && p2 == null){
@@ -349,13 +349,13 @@ public class App {
                 }else{
                     res.status(409); // Código de estado HTTP 201 (Created) para una creación exitosa.
                     // Redirige al formulario de creación con un mensaje de éxito.
-                    res.redirect("//create?message=Persona ya existente para " + name + "!");
+                    res.redirect("/teacher/new?message=Persona ya existente para " + name + "!");
                     return "";
                 }
 
                 res.status(201); // Código de estado HTTP 201 (Created) para una creación exitosa.
                 // Redirige al formulario de creación con un mensaje de éxito.
-                res.redirect("//create?message=Alta de docente realizada exitosamente para " + name + "!");
+                res.redirect("/teacher/new?message=Alta de docente realizada exitosamente para " + name + "!");
                 return ""; // Retorna una cadena vacía.
 
             } catch (Exception e) {

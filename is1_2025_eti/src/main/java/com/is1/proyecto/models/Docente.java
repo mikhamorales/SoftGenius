@@ -10,7 +10,7 @@ public class Docente extends Model{
     }
 
     public void setPerson(Persona persona){
-        set("persona_id", persona.getId());
+        set("id_person", persona.getId());
     }
 
     public void setMatricula(int matricula){
