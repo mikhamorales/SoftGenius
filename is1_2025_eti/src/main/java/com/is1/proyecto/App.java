@@ -296,9 +296,15 @@ public class App {
         });
 
         get("/teacher/new", (req, res) -> {
-            return new ModelAndView(new HashMap<>(), "docente_form.mustache"); // No pasa un modelo específico, solo el formulario.
+            Map<String, Object> model = new HashMap<>();
+            // Leer mensajes enviados por redirect
+            String success = req.queryParams("success");
+            String error = req.queryParams("error");
+            if (success != null) model.put("successMessage", success);
+            if (error != null) model.put("errorMessage", error);
+            return new ModelAndView(model, "docente_form.mustache");
         }, new MustacheTemplateEngine());
-
+        
         post("/teacher/new", (req, res) -> {
             String name = req.queryParams("nombre");
             String apellido = req.queryParams("apellido");
@@ -331,31 +337,37 @@ public class App {
                 ac.set("dni", dni);
                 ac.set("contacto", contacto);
                 ac.set("direccion", direccion);
-                Persona p1 = Persona.findFirst("dni = ?",dni);
-                Persona p2 = Persona.findFirst("contacto = ?", contacto);
+                
                 String regex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,}$";
                 if(contacto == null || !contacto.matches(regex)){
                     res.status(400); // Código de estado HTTP 201 (Created) para una creación exitosa.
                     // Redirige al formulario de creación con un mensaje de éxito.
-                    res.redirect("/teacher/new?message=Contacto incorrecto !");
+                    res.redirect("/teacher/new?error=Contacto incorrecto");
                     return "";
-                }
-                if(p1 == null && p2 == null){
-                    ac.saveIt(); // Guarda el nuevo usuario en la tabla 'users'.
-                    Docente dc = new Docente();
-                    dc.set("matricula", matricula);
-                    dc.setPerson(ac);
-                    dc.saveIt();
-                }else{
-                    res.status(409); // Código de estado HTTP 201 (Created) para una creación exitosa.
-                    // Redirige al formulario de creación con un mensaje de éxito.
-                    res.redirect("/teacher/new?message=Persona ya existente para " + name + "!");
+                } 
+                Persona p1 = Persona.findFirst("dni = ?",dni);
+                Persona p2 = Persona.findFirst("contacto = ?", contacto);
+                // Si DNI repetido
+                if (p1 != null) {
+                    res.redirect("/teacher/new?error=El DNI " + dni + " ya esta registrado");
                     return "";
                 }
 
+                // Si contacto repetido
+                if (p2 != null) {
+                    res.redirect("/teacher/new?error=El contacto " + contacto + " ya esta registrado");
+                    return "";
+                }
+
+                ac.saveIt();
+                Docente dc = new Docente();
+                dc.set("matricula", matricula);
+                dc.setPerson(ac);
+                dc.saveIt();
+
                 res.status(201); // Código de estado HTTP 201 (Created) para una creación exitosa.
                 // Redirige al formulario de creación con un mensaje de éxito.
-                res.redirect("/teacher/new?message=Alta de docente realizada exitosamente para " + name + "!");
+                res.redirect("/teacher/new?success=Alta de docente realizada exitosamente para " + name + "!");
                 return ""; // Retorna una cadena vacía.
 
             } catch (Exception e) {
