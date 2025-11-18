@@ -349,13 +349,13 @@ public class App {
                 Persona p2 = Persona.findFirst("contacto = ?", contacto);
                 // Si DNI repetido
                 if (p1 != null) {
-                    res.redirect("/teacher/new?error=El DNI " + dni + " ya esta registrado");
+                    res.redirect("/teacher/new?error=El DNI " + dni + " ya está registrado");
                     return "";
                 }
 
                 // Si contacto repetido
                 if (p2 != null) {
-                    res.redirect("/teacher/new?error=El contacto " + contacto + " ya esta registrado");
+                    res.redirect("/teacher/new?error=El contacto " + contacto + " ya está registrado");
                     return "";
                 }
 
@@ -367,7 +367,7 @@ public class App {
 
                 res.status(201); // Código de estado HTTP 201 (Created) para una creación exitosa.
                 // Redirige al formulario de creación con un mensaje de éxito.
-                res.redirect("/teacher/new?success=Alta de docente realizada exitosamente para " + name + "!");
+                res.redirect("/teacher/new?success=Alta de docente realizada exitosamente para " + name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase() + "!");
                 return ""; // Retorna una cadena vacía.
 
             } catch (Exception e) {
