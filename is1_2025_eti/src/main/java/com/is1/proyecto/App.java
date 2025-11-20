@@ -345,17 +345,24 @@ public class App {
                     res.redirect("/teacher/new?error=Contacto incorrecto");
                     return "";
                 } 
-                Persona p1 = Persona.findFirst("dni = ?",dni);
+                Persona p1 = Persona.findFirst("dni = ?", String.valueOf(dni));
                 Persona p2 = Persona.findFirst("contacto = ?", contacto);
                 // Si DNI repetido
                 if (p1 != null) {
-                    res.redirect("/teacher/new?error=El DNI " + dni + " ya está registrado");
+                    res.redirect("/teacher/new?error=El DNI " + dni + " ya esta registrado");
                     return "";
                 }
 
                 // Si contacto repetido
                 if (p2 != null) {
-                    res.redirect("/teacher/new?error=El contacto " + contacto + " ya está registrado");
+                    res.redirect("/teacher/new?error=El contacto " + contacto + " ya esta registrado");
+                    return "";
+                }
+
+                //Si matricula ya existe
+                Docente d1 = Docente.findFirst("matricula = ?", matricula);
+                if (d1 != null) {
+                    res.redirect("/teacher/new?error=La matricula " + matricula + " ya esta registrada");
                     return "";
                 }
 
